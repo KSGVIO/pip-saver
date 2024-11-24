@@ -1,5 +1,6 @@
 import os
 import requests
+from tqdm import tqdm  # Import tqdm for progress bar
 
 def create_folder(folder_name):
     """Create a folder if it doesn't already exist."""
@@ -19,14 +20,28 @@ def download_file(url, folder_name):
         filename = os.path.basename(url) or "downloaded_file"
         output_path = os.path.join(folder_name, filename)
 
-        # Write the file to the folder
-        with open(output_path, "wb") as file:
+        # Get the total file size from headers
+        total_size = int(response.headers.get('content-length', 0))
+
+        # Use tqdm to display a progress bar
+        with open(output_path, "wb") as file, tqdm(
+            desc=filename,
+            total=total_size,
+            unit="B",
+            unit_scale=True,
+            unit_divisor=1024,
+        ) as progress_bar:
             for chunk in response.iter_content(chunk_size=8192):
                 file.write(chunk)
+                progress_bar.update(len(chunk))
         
         print(f"File downloaded successfully: {output_path}")
     except requests.exceptions.RequestException as e:
         print(f"Failed to download the file. Error: {e}")
+
+def pause_program():
+    """Pause the program and wait for user input to continue."""
+    input("Press Enter to continue...")
 
 if __name__ == "__main__":
     # Prompt the user for the URL
@@ -43,3 +58,9 @@ if __name__ == "__main__":
 
     # Download the file into the folder
     download_file(url, folder_name)
+
+    # Pause after download is complete (optional)
+    pause_program()
+
+    # Exit the program after the final pause
+    exit(0)
