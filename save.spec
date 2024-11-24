@@ -2,7 +2,7 @@
 
 
 a = Analysis(
-    ['C:\\Repositories\\pip-saver\\save.py'],
+    ['c:\\Repositories\\pip-saver\\save.py'],
     pathex=[],
     binaries=[],
     datas=[],
